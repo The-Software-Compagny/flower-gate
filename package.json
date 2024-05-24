@@ -1,0 +1,79 @@
+{
+  "name": "@StreamKits/KeeperKits",
+  "version": "0.0.1",
+  "description": "Open-source Node.js OIDC auth system leveraging OpenID Connect & OAuth2 for secure, scalable authentication",
+  "keywords": [
+    "nestjs",
+    "nodejs",
+    "oidc",
+    "nosql",
+    "mongodb"
+  ],
+  "private": true,
+  "license": "BSD-3-Clause",
+  "author": "tacxou <12997062+tacxou@users.noreply.github.com> (https://github.com/tacxou)",
+  "contributors": [
+    {
+      "name": " tacxou",
+      "email": "12997062+tacxou@users.noreply.github.com",
+      "url": "https://github.com/tacxou"
+    },
+    {
+      "name": "Contributors",
+      "url": "https://github.com/streamkits/KeeperKits/graphs/contributors"
+    }
+  ],
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "nest build",
+    "start": "nest start",
+    "start:dev": "cross-env DEBUG=oidc-provider:* nest start --watch",
+    "start:debug": "cross-env DEBUG=oidc-provider:* nest start --debug --watch",
+    "start:prod": "node dist/main",
+    "generate": "nest g resource"
+  },
+  "dependencies": {
+    "@nestjs-modules/ioredis": "^2.0.2",
+    "@nestjs/common": "^10.3.8",
+    "@nestjs/config": "^3.2.2",
+    "@nestjs/core": "^10.3.8",
+    "@nestjs/mapped-types": "^2.0.5",
+    "@nestjs/mongoose": "^10.0.6",
+    "@nestjs/platform-express": "^10.3.8",
+    "body-parser": "^1.20.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "helmet": "^7.1.0",
+    "ioredis": "^5.4.1",
+    "mongoose": "^8.3.4",
+    "nest-oidc-provider": "2.0.0-next.3",
+    "nestjs-request-context": "^3.0.0",
+    "oidc-provider": "^8.4.6",
+    "pug": "^3.0.2",
+    "radash": "^12.1.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "types-package-json": "^2.0.39"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.3.2",
+    "@nestjs/schematics": "^10.1.1",
+    "@swc/cli": "^0.3.12",
+    "@swc/core": "^1.5.5",
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.11",
+    "@types/oidc-provider": "^8.4.4",
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0",
+    "cross-env": "^7.0.3",
+    "eslint": "^9.2.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "prettier": "^3.2.5",
+    "source-map-support": "^0.5.21",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.4.5"
+  }
+}

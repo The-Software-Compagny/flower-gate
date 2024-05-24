@@ -1,0 +1,32 @@
+extends layouts/authenticate
+
+block content
+  q-card.connexion(style="min-width: 400px;")
+    q-toolbar.bg-primary.text-white
+      q-toolbar-title Connexion
+    q-card-section
+      form#local.column(action='/interaction/' + uid method='POST' autocomplete='off')
+        input(type='hidden' name='upstream' id='upstream')
+
+        .row.q-py-sm
+          q-input.full-width(
+            label='Nom d\'utilisateur' name='username' id='username'
+            type='text' filled
+          )
+        .row.q-py-sm
+          q-input.full-width(
+            label='Mot de passe' name='password' id='password'
+            type='password' filled
+          )
+        .row.q-pt-md.q-mt-sm
+          q-btn.full-width(type='submit' color='primary')
+            q-icon(name='mdi-login' left)
+            span Se connecter
+  .row
+    //a.text-white(href="#") Support
+block append script
+  script.
+    function login(type) {
+      document.getElementById('upstream').value = type
+      document.getElementById('login').submit()
+    }

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "assets": [
+      "**/*.pug",
+      "config/**/*",
+      {
+        "include": "public/**/*",
+        "exclude": "**/*.js"
+      },
+      {
+        "include": "_i18n/**/*",
+        "watchAssets": true
+      }
+    ],
+    "builder": "swc",
+    "typeCheck": true,
+    "watchAssets": true
+  }
+}
