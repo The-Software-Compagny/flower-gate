@@ -114,6 +114,9 @@ export class InteractionController {
       //   form.password,
       // )
       // console.log('user', user.toJSON())
+      if (form.username !== 'admin' || form.password !== 'admin') {
+        throw new BadRequestException('Invalid username or password')
+      }
 
       if (lastSubmission && lastSubmission.twofa && req.body.token) {
         // console.log('verif', verifyToken(user.googleAuthKey, req.body.token))

@@ -10,6 +10,8 @@ import { InteractionModule } from './interaction/interaction.module'
 import { OidcConfigModule } from './oidc-config/oidc-config.module'
 import { OidcConfigService } from './oidc-config/oidc-config.service'
 import { OidcModule } from 'nest-oidc-provider'
+import { ServeStaticModule } from '@nestjs/serve-static'
+import { join } from 'node:path'
 
 @Module({
   imports: [
@@ -41,11 +43,15 @@ import { OidcModule } from 'nest-oidc-provider'
         options: config.get<RedisOptions>('ioredis.options'),
       }),
     }),
+    InteractionModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+      serveRoot: '/assets',
+    }),
     OidcModule.forRootAsync({
       imports: [OidcConfigModule],
       useExisting: OidcConfigService,
     }),
-    InteractionModule,
   ],
   providers: [AppService],
 })

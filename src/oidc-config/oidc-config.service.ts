@@ -45,6 +45,7 @@ export class OidcConfigService implements OidcModuleOptionsFactory {
           client_id: 'test',
           client_secret: 'test',
           grant_types: [
+            'implicit',
             // 'client_credentials',
             'authorization_code',
             'refresh_token',
@@ -55,8 +56,8 @@ export class OidcConfigService implements OidcModuleOptionsFactory {
           response_types: ['code'],
           redirect_uris: [
             'https://oidcdebugger.com/debug',
-            'http://localhost:3000/login',
-            'http://localhost:3000/',
+            'https://127.0.0.1:3000/login',
+            'https://127.0.0.1:3000/',
             'https://psteniusubi.github.io/oidc-tester/authorization-code-flow.html',
           ],
         },
