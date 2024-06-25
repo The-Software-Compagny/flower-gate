@@ -1,13 +1,14 @@
+doctype(html)
 html(lang='fr')
   head
+    meta(charset='utf-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
     block head
       include ../partials/quasar.head.pug
-  body
+  body(class='dark')
     block body
-      div#q-app
-        q-layout(view="lHh Lpr lFf")
-          q-page-container
-            q-page.full-height.flex.column.no-wrap.overflow-auto.justify-center.items-center(padding)
-              block content
+      section.bg-gray-50.h-full(class='dark:bg-gray-900')
+        .flex.flex-col.items-center.justify-center.px-6.py-8.mx-auto.h-full(class='md:h-screen lg:py-0')
+          block content
     block script
       include ../partials/quasar.script.pug
