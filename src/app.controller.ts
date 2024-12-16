@@ -1,5 +1,6 @@
-import { Controller, Logger } from '@nestjs/common'
+import { Controller, Get, Logger, Res } from '@nestjs/common'
 import { AppService } from './app.service'
+import { Response } from 'express'
 
 @Controller()
 export class AppController {
@@ -7,5 +8,8 @@ export class AppController {
 
   constructor(private readonly service: AppService) { }
 
-  
+  @Get()
+  public async index(@Res() res: Response) {
+    return res.render('index')
+  }
 }

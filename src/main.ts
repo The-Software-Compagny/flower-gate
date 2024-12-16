@@ -1,12 +1,15 @@
 import { Logger } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { NestExpressApplication } from '@nestjs/platform-express'
-import { Response } from 'express'
-import { AppModule } from './app.module'
 import { urlencoded } from 'body-parser'
-import { readFileSync, existsSync, writeFileSync } from 'node:fs'
+import { Response } from 'express'
+import { engine } from 'express-handlebars'
+import handlebars from 'handlebars'
+import handlebarsLayouts from 'handlebars-layouts'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { promisified } from 'pem'
-import tailwindcss from 'tailwindcss'
+import { AppModule } from './app.module'
 
 declare const module: any;
 (async (): Promise<void> => {
@@ -38,11 +41,23 @@ declare const module: any;
     next()
   })
 
-  app.setViewEngine('pug')
+  handlebars.registerHelper(handlebarsLayouts(handlebars))
+  app.engine('hbs', engine({
+    extname: '.hbs',
+    defaultLayout: 'main',
+    layoutsDir: join(process.cwd(), '/views/layouts'),
+    partialsDir: join(process.cwd(), '/views/partials'),
+    helpers: {
+      json: (context: any) => JSON.stringify(context, null, 2),
+    },
+  }))
+  app.setViewEngine('hbs')
+  app.setBaseViewsDir(join(process.cwd(), '/views/pages'))
+
   app.use('/interaction', urlencoded({ extended: false }))
 
   await app.listen(2000, async (): Promise<void> => {
-    Logger.log('FlowerGate is READY on <https://localhost:2000/.well-known/openid-configuration> !')
+    Logger.log('FlowerGate is READY on <https://localhost:2000/oidc/.well-known/openid-configuration> !')
   })
 
   if (module.hot) {

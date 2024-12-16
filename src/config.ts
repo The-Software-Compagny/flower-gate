@@ -1,4 +1,3 @@
-import { MongooseModuleOptions } from '@nestjs/mongoose'
 import { RedisOptions } from 'ioredis'
 import { HelmetOptions } from 'helmet'
 import { OidcConfiguration } from 'nest-oidc-provider'
@@ -12,11 +11,6 @@ export interface ConfigInstance {
   helmet: HelmetOptions
   oidc: OidcConfiguration & {
     issuer: string
-  }
-  mongoose: {
-    uri: string;
-    options: MongooseModuleOptions
-    plugins: MongoosePlugin[]
   }
   ioredis: {
     uri: string;
@@ -61,13 +55,6 @@ export default async (): Promise<ConfigInstance> => {
         showFriendlyErrorStack: true,
         maxRetriesPerRequest: null,
       },
-    },
-    mongoose: {
-      uri: process.env.OIDC_MONGOOSE_URI,
-      options: {
-        // directConnection: true,
-      },
-      plugins: [],
     },
   }
 }

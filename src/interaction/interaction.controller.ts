@@ -16,7 +16,7 @@ import { InjectOidcProvider, InteractionHelper, OidcInteraction, Provider } from
 export class InteractionController {
   private readonly logger = new Logger(InteractionController.name)
 
-  constructor(
+  public constructor(
     @InjectOidcProvider() private readonly provider: Provider,
   ) { }
 
@@ -87,7 +87,7 @@ export class InteractionController {
     }
   }
 
-  @Post([':uid', ':uid/login'])
+  @Post(':uid')
   public async login(
     @OidcInteraction() interaction: InteractionHelper,
     @Body() form: Record<string, string>,

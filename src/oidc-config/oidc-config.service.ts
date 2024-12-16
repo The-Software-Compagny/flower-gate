@@ -1,34 +1,36 @@
-'use strict'
-
-import { Injectable, Logger } from '@nestjs/common'
-import { readFileSync } from 'fs'
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { AdapterFactory } from 'oidc-provider'
-import { DatabaseService } from '~/database/database.service'
-import { DatabaseAdapter } from '~/database/database.adapter'
 import { OidcConfiguration, OidcModuleOptions, OidcModuleOptionsFactory } from 'nest-oidc-provider'
+import { StorageAdapter } from '~/storage/storage.adapter'
+import { IORedisService } from '~/storage/_services/io-redis.service'
 // import { KEYSTORE_FILE_PATH } from '~/setup/jose'
 
 @Injectable()
-export class OidcConfigService implements OidcModuleOptionsFactory {
+export class OidcConfigService implements OidcModuleOptionsFactory, OnModuleInit {
   private readonly logger = new Logger(OidcConfigService.name)
 
   public constructor(
-    private readonly dbService: DatabaseService,
+    private readonly dbService: IORedisService,
     private readonly configService: ConfigService,
   ) { }
+
+  public async onModuleInit() {
+    //TODO: parse and validate the configuration yml file
+    this.logger.debug('onModuleInit')
+  }
 
   public createModuleOptions(): OidcModuleOptions | Promise<OidcModuleOptions> {
     return {
       issuer: this.configService.get('oidc.issuer'),
-      path: '/oidc',
       oidc: this.getConfiguration(),
+      path: '/oidc',
       // proxy: true,
     }
   }
 
   public createAdapterFactory(): AdapterFactory | Promise<AdapterFactory> {
-    return (modelName: string) => new DatabaseAdapter(modelName, this.dbService)
+    return (modelName: string) => new StorageAdapter(modelName, this.dbService)
   }
 
   /**
@@ -40,7 +42,6 @@ export class OidcConfigService implements OidcModuleOptionsFactory {
 
     return {
       clients: [
-
         {
           client_id: 'test',
           client_secret: 'test',

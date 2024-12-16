@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { ModuleRef } from '@nestjs/core'
+import { RequestContextStorage } from '@the-software-compagny/nestjs_module_restools'
 import { Request } from 'express'
-import { RequestContext } from 'nestjs-request-context'
 
 export interface AbstractServiceContext {
   [key: string | number]: any;
@@ -27,7 +27,7 @@ export abstract class AbstractService {
       user?: any // eslint-disable-line
     })
     | null {
-    return this._req || RequestContext.currentContext?.req;
+    return this._req || RequestContextStorage.currentContext?.req;
   }
 
   public get moduleName(): string {

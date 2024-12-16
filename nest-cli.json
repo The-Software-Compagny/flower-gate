@@ -5,11 +5,11 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "assets": [
-      "**/*.pug",
+      "views/**/*.hbs",
       "config/**/*",
       {
-        "include": "public/**/*",
-        "exclude": "**/*.js"
+        "include": "assets/**/*",
+        "watchAssets": true
       },
       {
         "include": "_i18n/**/*",

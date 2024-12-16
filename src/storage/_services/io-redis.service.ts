@@ -3,40 +3,12 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRedis } from '@nestjs-modules/ioredis'
 import Redis from 'ioredis'
+import { AbstractServiceStorage } from '~/_common/abstracts/abstract.service-storage'
 
 @Injectable()
-export class DatabaseService {
-  private readonly grantable = new Set([
-    'AccessToken',
-    'AuthorizationCode',
-    'RefreshToken',
-    'DeviceCode',
-    'BackchannelAuthenticationRequest',
-  ])
-
-  private readonly consumable = new Set([
-    'AuthorizationCode',
-    'RefreshToken',
-    'DeviceCode',
-    'BackchannelAuthenticationRequest',
-  ])
-
-  public constructor(@InjectRedis() private readonly redis: Redis) { }
-
-  private key(model: string, id: string): string {
-    return `${model}:${id}`
-  }
-
-  private grantKeyFor(id: string): string {
-    return `grant:${id}`
-  }
-
-  private sessionUidKeyFor(id: string): string {
-    return `sessionUid:${id}`
-  }
-
-  private userCodeKeyFor(userCode: string): string {
-    return `userCode:${userCode}`
+export class IORedisService extends AbstractServiceStorage {
+  public constructor(@InjectRedis() private readonly redis: Redis) {
+    super()
   }
 
   public async upsert(
@@ -44,7 +16,7 @@ export class DatabaseService {
     id: string,
     payload: Record<string, any>,
     expiresIn: number,
-  ) {
+  ): Promise<void> {
     const key = this.key(model, id)
     const store = this.consumable.has(model)
       ? { payload: JSON.stringify(payload) }
@@ -79,17 +51,16 @@ export class DatabaseService {
       multi.expire(uidKey, expiresIn)
     }
 
-    // console.log('upsert', model, id, payload, expiresIn, key, store, multi)
-
     await multi.exec()
   }
 
-  public async delete(model: string, id: string) {
+  public async delete(model: string, id: string): Promise<void> {
     const key = this.key(model, id)
+
     await this.redis.del(key)
   }
 
-  public async consume(model: string, id: string) {
+  public async consume(model: string, id: string): Promise<void> {
     await this.redis.hset(
       this.key(model, id),
       'consumed',
@@ -97,12 +68,10 @@ export class DatabaseService {
     )
   }
 
-  public async find(model: string, id: string) {
-    console.log('find', model, id, this.key(model, id))
+  public async find(model: string, id: string): Promise<any> {
     const data = this.consumable.has(model)
       ? await this.redis.hgetall(this.key(model, id))
       : await this.redis.get(this.key(model, id))
-    // console.log('parse data', data)
 
     if (!data) {
       return undefined
@@ -111,9 +80,10 @@ export class DatabaseService {
     if (typeof data === 'string') {
       return JSON.parse(data)
     }
+
     const { payload, ...rest } = data
+
     try {
-      // fix with try catch
       return {
         ...rest,
         ...JSON.parse(payload),
@@ -123,22 +93,25 @@ export class DatabaseService {
     }
   }
 
-  public async findByUid(model: string, uid: string) {
+  public async findByUid(model: string, uid: string): Promise<any> {
     const id = await this.redis.get(this.sessionUidKeyFor(uid))
+
     return this.find(model, id)
   }
 
-  public async findByUserCode(model: string, userCode: string) {
+  public async findByUserCode(model: string, userCode: string): Promise<any> {
     const id = await this.redis.get(this.userCodeKeyFor(userCode))
+
     return this.find(model, id)
   }
 
-  public async revokeByGrantId(grantId: string) {
+  public async revokeByGrantId(grantId: string): Promise<void> {
     const grantKey = this.grantKeyFor(grantId)
     const multi = this.redis.multi()
     const tokens = await this.redis.lrange(grantKey, 0, -1)
     tokens.forEach((token) => multi.del(token))
     multi.del(grantKey)
+
     await multi.exec()
   }
 }

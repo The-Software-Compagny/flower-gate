@@ -1,38 +1,24 @@
+import { RedisModule } from '@nestjs-modules/ioredis'
 import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
-import config, { MongoosePlugin } from './config'
-import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose'
-import mongoose from 'mongoose'
-import { RedisModule } from '@nestjs-modules/ioredis'
+import { RequestContextModule } from '@the-software-compagny/nestjs_module_restools'
 import { RedisOptions } from 'ioredis'
+import { OidcModule } from 'nest-oidc-provider'
+import { AppController } from './app.controller'
 import { AppService } from './app.service'
+import config from './config'
 import { InteractionModule } from './interaction/interaction.module'
 import { OidcConfigModule } from './oidc-config/oidc-config.module'
 import { OidcConfigService } from './oidc-config/oidc-config.service'
-import { OidcModule } from 'nest-oidc-provider'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { join } from 'node:path'
+import { RendererModule } from './renderer/renderer.module'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
-    }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (config: ConfigService) => {
-        for (const plugin of config.get<MongoosePlugin[]>('mongoose.plugins')) {
-          import(plugin.package).then((plugin) => {
-            mongoose.plugin(plugin.default ? plugin.default : plugin, plugin.options);
-          });
-        }
-        return {
-          ...config.get<MongooseModuleOptions>('mongoose.options'),
-          uri: config.get<string>('mongoose.uri'),
-        };
-      },
     }),
     RedisModule.forRootAsync({
       imports: [ConfigModule],
@@ -44,15 +30,20 @@ import { join } from 'node:path'
       }),
     }),
     InteractionModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
-      serveRoot: '/assets',
-    }),
+    RendererModule.register({
+      input: join(process.cwd(), 'assets/css/input.css'),
+    }, [{
+      rootPath: join(process.cwd(), 'public'),
+      serveRoot: '/static',
+    }]),
     OidcModule.forRootAsync({
       imports: [OidcConfigModule],
       useExisting: OidcConfigService,
     }),
+    RequestContextModule,
   ],
+  controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {
+}
